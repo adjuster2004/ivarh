@@ -1,0 +1,145 @@
+﻿// RECORDED SCRIPT 11.10.2025
+// Для начала нужно зайти по ссылке https://af.ivarh.ru/archive1/unit/10001743542
+// В браузере отобразится страница дела. Будет указан фонд, опись и дело
+// После запуска нужно будет указать, с какой страницы начинать загрузку,
+// иногда требуется догрузить дело.
+// Все остальное скрипт сделает сам.
+
+$S_CORR = 0
+$s = 1
+$start = 0
+$finish = 0
+
+// с какого листа начнем закачку
+$start = INPUTBOX ("с какого листа начнем закачку? ", 1, 60 ) 
+print("с какого листа начнем закачку ",$start)
+
+waitms(959 + $S_CORR)
+  LCLICK(837,556)
+waitms(59 + $S_CORR)
+
+KEYDOWN (#CTRL)
+WAITMS (50)
+KEYPRESS (#A)
+WAITMS (50)
+KEYPRESS (#C)
+KEYUP (#CTRL)
+
+TFCLEAR ("link.txt") 
+
+// записываем данные со страницы в файл
+StrWriteln("link.txt", FROMCLIP ())
+
+// подготавливаем данные для формирования ссылки
+$link_fond1 = STRREADLN ("link.txt", 15)
+$link_fond = STRREPLACE($link_fond1, "Фонд № ", "")
+
+$link_opis1 = STRREADLN ("link.txt", 16)
+$link_opis = STRREPLACE($link_opis1, "Опись ", "")
+
+$link_delo1 = STRREADLN ("link.txt", 17)
+$link_delo = STRREPLACE($link_delo1, "Дело ", "")
+
+// переходим в адресную строку и копируем в буфер
+lDown(770,84)
+waitms(58 + $S_CORR)
+  lUp(770,84)
+waitms(304 + $S_CORR)
+  keyDown(162)
+waitms(0 + $S_CORR)
+  keyDown(17)
+waitms(266 + $S_CORR)
+  keyDown(65)
+waitms(207 + $S_CORR)
+  keyUp(65)
+waitms(285 + $S_CORR)
+  keyDown(67)
+waitms(214 + $S_CORR)
+  keyUp(67)
+waitms(191 + $S_CORR)
+  keyUp(17)
+waitms(0 + $S_CORR)
+  keyUp(162)
+
+// формируем ссылку https://af.ivarh.ru/archive1/image/10001795772?fod=505:1:22&n=
+$link = STRREPLACE(FROMCLIP (), "unit", "image")
+
+LOGWRITE ($link)
+$link = STRCONCAT ($link, "?fod=", $link_fond,":", $link_opis,":", $link_delo,"&n=")
+
+LOGWRITE ($link)
+
+TFCLEAR ("link.txt") 
+
+	// редактируем ссылку и помещаем полученную ссылку в буфер
+	TOCLIP (StrConcat($link, $start )) 
+
+	// вставляем обновленную ссылку в адресную строку
+	KEYDOWN (#CTRL)
+	WAITMS (50)
+	KEYPRESS (#A)
+	KEYUP (#CTRL)
+	 
+	KEYDOWN (#CTRL)
+	WAITMS (50)
+	KEYPRESS (#V)
+	KEYUP (#CTRL)	
+
+	WAITMS (50)
+	KEYPRESS (#ENTER)
+	
+	waitms(81 + $S_CORR)
+
+// запускаем сам скрипт загрузки листов
+WHILE ( $finish = 0 )
+
+	// редактируем ссылку и помещаем полученную ссылку в буфер
+	TOCLIP (StrConcat($link, $start )) 
+
+	// переходим в адресную строку	  
+	LCLICK(770,84)
+	
+	// вставляем обновленную ссылку
+	KEYDOWN (#CTRL)
+	WAITMS (50)
+	KEYPRESS (#A)
+	KEYUP (#CTRL)
+	 
+	KEYDOWN (#CTRL)
+	WAITMS (50)
+	KEYPRESS (#V)
+	KEYUP (#CTRL)	
+
+	WAITMS (50)
+	KEYPRESS (#ENTER)
+	
+	waitms(681 + $S_CORR)
+	
+	cicle:
+	// проверяем смену картинки с момента вставки ссылки
+	LOGWRITE ("ожижаем загрузки картинки")
+	GETSCREEN
+	IF_PICTURE_IN (125,12, 158,49, "number.bmp")
+		
+	ELSE
+		IF_PICTURE_IN (74,257, 1353,776, "error.bmp")
+			LOGWRITE ("похоже, закончились листы")
+			$finish = 1
+			HALT
+		END_IF
+		goto (cicle)
+	END_IF
+	
+	//waitms(1181 + $S_CORR)
+	LOGWRITE ("сохраняем ", $start)
+	// ждем кнопку Сохранить
+	waitms(481 + $S_CORR)
+	  LCLICK(1400,85) // старое значение 1470, 85
+	waitms(181 + $S_CORR)
+	
+	$start = $start + 1
+	
+	
+END_CYC
+
+HALT

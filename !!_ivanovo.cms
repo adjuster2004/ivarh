@@ -2,7 +2,7 @@
 // Для начала нужно зайти по ссылке https://af.ivarh.ru/archive1/unit/10001743542
 // В браузере отобразится страница дела. Будет указан фонд, опись и дело
 // После запуска нужно будет указать, с какой страницы начинать загрузку,
-// иногда требуется догрузить дело.
+// (иногда требуется догрузить дело)
 // Все остальное скрипт сделает сам.
 
 $S_CORR = 0
@@ -11,8 +11,8 @@ $start = 0
 $finish = 0
 
 // с какого листа начнем закачку
-$start = INPUTBOX ("с какого листа начнем закачку? ", 1, 60 ) 
-print("с какого листа начнем закачку ",$start)
+$start = INPUTBOX ("с какого листа начнем загрузку? ", 1, 60 ) 
+print("с какого листа начнем загрузку ",$start)
 
 waitms(959 + $S_CORR)
   LCLICK(837,556)
@@ -61,7 +61,7 @@ waitms(191 + $S_CORR)
 waitms(0 + $S_CORR)
   keyUp(162)
 
-// формируем ссылку https://af.ivarh.ru/archive1/image/10001795772?fod=505:1:22&n=
+// формируем ссылку
 $link = STRREPLACE(FROMCLIP (), "unit", "image")
 
 LOGWRITE ($link)
@@ -71,24 +71,24 @@ LOGWRITE ($link)
 
 TFCLEAR ("link.txt") 
 
-	// редактируем ссылку и помещаем полученную ссылку в буфер
-	TOCLIP (StrConcat($link, $start )) 
+// редактируем ссылку и помещаем полученную ссылку в буфер
+TOCLIP (StrConcat($link, $start )) 
 
-	// вставляем обновленную ссылку в адресную строку
-	KEYDOWN (#CTRL)
-	WAITMS (50)
-	KEYPRESS (#A)
-	KEYUP (#CTRL)
+// вставляем обновленную ссылку в адресную строку
+KEYDOWN (#CTRL)
+WAITMS (50)
+KEYPRESS (#A)
+KEYUP (#CTRL)
 	 
-	KEYDOWN (#CTRL)
-	WAITMS (50)
-	KEYPRESS (#V)
-	KEYUP (#CTRL)	
+KEYDOWN (#CTRL)
+WAITMS (50)
+KEYPRESS (#V)
+KEYUP (#CTRL)	
 
-	WAITMS (50)
-	KEYPRESS (#ENTER)
+WAITMS (50)
+KEYPRESS (#ENTER)
 	
-	waitms(81 + $S_CORR)
+waitms(81 + $S_CORR)
 
 // запускаем сам скрипт загрузки листов
 WHILE ( $finish = 0 )
@@ -138,7 +138,6 @@ WHILE ( $finish = 0 )
 	waitms(181 + $S_CORR)
 	
 	$start = $start + 1
-	
 	
 END_CYC
 
